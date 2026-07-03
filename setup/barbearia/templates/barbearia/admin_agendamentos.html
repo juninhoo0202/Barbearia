@@ -1,0 +1,363 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Barbearia Estilo - Painel Admin</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { background-color: #f0f9f0; transition: 0.3s; }
+    .navbar { background-color: #198754; }
+    .navbar-brand { font-weight: bold; }
+    .card { background: rgba(255,255,255,0.95); border: none; border-radius: 1rem; transition: box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; }
+    .card:hover { transform: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .hidden { display: none; }
+    .chart-container { position: relative; height: 300px; }
+    .hover-bg-success:hover { background: #198754; color: white !important; }
+    .hover-bg-danger:hover { background: #dc3545; color: white !important; }
+  </style>
+</head>
+<body>
+  {% include "barbearia/partials/site_chrome.html" %}
+  {% csrf_token %}
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold text-white" href="/">✂️ Painel Administrador</a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button class="btn btn-light btn-sm" data-bs-toggle="offcanvas" data-bs-target="#menuLateral">
+          <i class="bi bi-list"></i> Menu
+        </button>
+        <form action="{% url 'logout' %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm fw-bold">
+            <i class="bi bi-box-arrow-right me-1"></i> Sair
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Menu Lateral -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="menuLateral">
+    <div class="offcanvas-header" style="border-bottom: 1px solid #198754;">
+      <h5 class="offcanvas-title fw-bold text-success">Painel ADM</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-3" style="background: linear-gradient(to bottom, #f0f9f0, #ffffff);">
+      <ul class="list-unstyled">
+        <li class="text-muted small fw-bold d-flex align-items-center mt-2 mb-2">
+          <i class="bi bi-person-check-fill me-2 text-success"></i> Área do Cliente
+        </li>
+        <p class="small text-muted ms-4 mb-2">Atalhos públicos para página inicial e agendamentos.</p>
+        <div class="p-2 rounded border border-success mb-3">
+          <a href="{% url 'home' %}" class="d-block py-2 px-3 rounded text-decoration-none text-dark hover-bg-success mb-2">
+            <i class="bi bi-house-door-fill me-2 text-success"></i> Página Inicial
+          </a>
+          <a href="/agendar/" class="d-block py-2 px-3 rounded text-decoration-none text-dark hover-bg-success">
+            <i class="bi bi-calendar-check-fill me-2 text-success"></i> Agendar Horários
+          </a>
+        </div>
+
+        <li class="text-muted small fw-bold d-flex align-items-center mt-2 mb-2">
+          <i class="bi bi-shield-lock-fill me-2 text-success"></i> Área Administrativa
+        </li>
+        <p class="small text-muted ms-4 mb-2">Ferramentas de gestão e controle do painel.</p>
+        <div class="p-2 rounded border border-success mb-3">
+          <button class="d-block py-2 px-3 w-100 text-start btn btn-light" onclick="toggleAgendamentos()">
+            <i class="bi bi-calendar-check me-2 text-success"></i> Ver Agendamentos
+          </button>
+        </div>
+
+      </ul>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <main class="container my-5">
+    <h2 class="fw-bold text-success mb-4">📊 Painel Administrativo</h2>
+
+    <!-- KPIs -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3 border-success">
+          <h3 id="totalAgendamentos" class="fw-bold text-success">{{ total_agendamentos }}</h3>
+          <p class="mb-0">Agendamentos</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm text-center p-3 border-success">
+          <h3 id="totalClientes" class="fw-bold text-success">{{ total_clientes }}</h3>
+          <p class="mb-0">Clientes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exportação -->
+    <div class="d-flex gap-2 mb-4">
+      <a href="/exportar/excel/" class="btn btn-success shadow-sm">
+        <i class="bi bi-file-earmark-excel-fill"></i> Exportar Excel
+      </a>
+      <a href="/exportar/pdf/" class="btn btn-danger shadow-sm">
+        <i class="bi bi-file-earmark-pdf-fill"></i> Exportar PDF
+      </a>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card shadow-sm p-3">
+          <h6 class="fw-bold mb-3">Serviços mais agendados</h6>
+          <div class="chart-container">
+            <canvas id="graficoServicos"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card shadow-sm p-3">
+          <h6 class="fw-bold mb-3">Agendamentos por dia (semana)</h6>
+          <div class="chart-container">
+            <canvas id="graficoSemana"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Atalhos Rápidos -->
+    <div class="d-flex gap-2 flex-wrap mb-4">
+      <button class="btn btn-success" onclick="toggleAgendamentos()">📋 Ver Agendamentos</button>
+      <button class="btn btn-danger" onclick="confirmarExcluirTodos()">🗑️ Excluir Todos</button>
+    </div>
+
+    <!-- Loader -->
+    <div id="loading" class="text-center my-4 hidden">
+      <div class="spinner-border text-success"></div>
+      <p>Carregando agendamentos...</p>
+    </div>
+
+    <!-- Cards de Agendamentos -->
+    <div id="agendamentosContainer" class="row g-3 hidden">
+      {% if agendamentos %}
+        {% for agendamento in agendamentos %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card shadow rounded-4 border-success h-100">
+            <div class="card-body">
+              <h5 class="card-title text-success fw-bold">{{ agendamento.cliente }}</h5>
+              <p class="card-text">
+                <i class="bi bi-scissors"></i> {{ agendamento.servico }}<br>
+                <i class="bi bi-calendar-event"></i> {{ agendamento.data|date:"d/m/Y" }} às {{ agendamento.hora }}<br>
+                <i class="bi bi-telephone"></i> {{ agendamento.cliente.telefone|default:"Não informado" }}
+              </p>
+              <button onclick="excluirAgendamentoAdmin({{ agendamento.id }}, this)" class="btn btn-dark btn-sm w-100">
+                  ❌ Excluir Agendamento
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div id="semAgendamentosMsg" class="col-12">
+          <div class="alert alert-info">Nenhum agendamento encontrado.</div>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="toast position-fixed bottom-0 end-0 p-3 bg-success text-white" style="z-index: 1055;" role="alert">
+    <div class="toast-body"></div>
+  </div>
+
+ <!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-danger">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger fw-bold">⚠️ Confirmação</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Tem certeza que deseja excluir este agendamento?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Mensagens -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="messageModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="messageModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+let agendamentoIdParaExcluir = null;
+let cardParaExcluir = null;
+let excluirTodosConfirmado = false;
+
+const confirmModal = new bootstrap.Modal(document.getElementById("confirmModal"));
+const messageModal = new bootstrap.Modal(document.getElementById("messageModal"));
+
+function toggleAgendamentos() {
+    const container = document.getElementById("agendamentosContainer");
+    const loading = document.getElementById("loading");
+    container.classList.toggle("hidden");
+
+    if (!container.classList.contains("hidden")) {
+        loading.classList.remove("hidden");
+        setTimeout(() => loading.classList.add("hidden"), 1000);
+        container.scrollIntoView({ behavior: "smooth" });
+
+        // Mostrar mensagem se não houver agendamentos
+        const cards = container.querySelectorAll(".card");
+        const mensagem = document.getElementById("semAgendamentosMsg");
+
+        if (cards.length === 0) {
+            if (!mensagem) {
+                const msgDiv = document.createElement("div");
+                msgDiv.id = "semAgendamentosMsg";
+                msgDiv.className = "col-12";
+                msgDiv.innerHTML = `<div class="alert alert-info">Nenhum agendamento encontrado.</div>`;
+                container.appendChild(msgDiv);
+            }
+        } else {
+            if (mensagem) mensagem.remove();
+        }
+    }
+}
+
+function excluirAgendamentoAdmin(id, cardEl) {
+    agendamentoIdParaExcluir = id;
+    cardParaExcluir = cardEl.closest(".col-md-6, .col-lg-4");
+    excluirTodosConfirmado = false;
+    confirmModal.show();
+}
+
+function confirmarExcluirTodos() {
+    excluirTodosConfirmado = true;
+    confirmModal.show();
+}
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+    confirmModal.hide();
+
+    if (excluirTodosConfirmado) {
+        try {
+            const resp = await fetch(`/excluir-todos/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrftoken }
+            });
+            const data = await resp.json();
+            document.getElementById("messageModalTitle").textContent = data.ok ? "✅ Sucesso" : "❌ Erro";
+            document.getElementById("messageModalBody").textContent = data.msg || "Algo deu errado.";
+            messageModal.show();
+
+            if (data.ok) {
+                document.querySelectorAll("#agendamentosContainer .col-md-6, #agendamentosContainer .col-lg-4").forEach(card => {
+                    card.remove();
+                });
+                toggleAgendamentos(); // Atualiza mensagem se vazio
+            }
+        } catch {
+            document.getElementById("messageModalTitle").textContent = "❌ Erro";
+            document.getElementById("messageModalBody").textContent = "Erro ao excluir todos os agendamentos.";
+            messageModal.show();
+        } finally {
+            excluirTodosConfirmado = false;
+        }
+        return;
+    }
+
+    if (!agendamentoIdParaExcluir) return;
+    try {
+        const resp = await fetch(`/excluir/${agendamentoIdParaExcluir}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrftoken }
+        });
+        const data = await resp.json();
+        document.getElementById("messageModalTitle").textContent = data.ok ? "✅ Sucesso" : "❌ Erro";
+        document.getElementById("messageModalBody").textContent = data.msg || "Algo deu errado.";
+        messageModal.show();
+
+        if (data.ok && cardParaExcluir) {
+            cardParaExcluir.remove();
+            toggleAgendamentos(); // Atualiza mensagem se vazio
+        }
+    } catch {
+        document.getElementById("messageModalTitle").textContent = "❌ Erro";
+        document.getElementById("messageModalBody").textContent = "Erro ao excluir o agendamento.";
+        messageModal.show();
+    }
+});
+
+// Carregar gráficos
+let graficoServicos;
+let graficoSemana;
+async function carregarGraficos() {
+    try {
+        const resp = await fetch("/dados-graficos/");
+        const dados = await resp.json();
+        if (graficoServicos) graficoServicos.destroy();
+        graficoServicos = new Chart(document.getElementById("graficoServicos"), {
+            type: "doughnut",
+            data: {
+                labels: ["Corte", "Barba", "Corte + Barba", "Sobrancelha"],
+                datasets: [{
+                    data: dados.servicos,
+                    backgroundColor: ["rgba(54,162,235,0.8)","rgba(255,99,132,0.8)","rgba(255,206,86,0.8)","rgba(75,192,192,0.8)"],
+                    borderWidth: 2, borderColor: "#fff", hoverOffset: 12
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: "bottom", labels: { font: { size: 14 } } } } }
+        });
+        if (graficoSemana) graficoSemana.destroy();
+        graficoSemana = new Chart(document.getElementById("graficoSemana"), {
+            type: "bar",
+            data: { labels: ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"], datasets: [{ label: "Agendamentos", data: dados.semana, backgroundColor: dados.semana.map(v=>v>5?"rgba(220,53,69,0.8)":"rgba(25,135,84,0.8)"), borderRadius: 10 }] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        });
+        document.getElementById("totalAgendamentos").textContent = dados.total_agendamentos;
+        document.getElementById("totalClientes").textContent = dados.total_clientes;
+    } catch(e){ console.error("Erro ao carregar gráficos:",e); }
+}
+carregarGraficos(); setInterval(carregarGraficos,5000);
+
+// Filtrar agendamentos expirados
+function filtrarAgendamentosExpirados(){
+    const agora = new Date();
+    document.querySelectorAll("#agendamentosContainer .card").forEach(card=>{
+        const textoData = card.querySelector(".bi-calendar-event").nextSibling.textContent.trim();
+        const partes = textoData.split(" ");
+        if(partes.length<3)return;
+        const [dia,mes,ano]=partes[0].split("/").map(Number);
+        const [hora,minuto]=partes[2].split(":").map(Number);
+        const dataHora=new Date(ano,mes-1,dia,hora,minuto);
+        if(dataHora<agora)card.parentElement.remove();
+    });
+}
+filtrarAgendamentosExpirados(); setInterval(filtrarAgendamentosExpirados,60000);
+</script>
+</body>
+</html>

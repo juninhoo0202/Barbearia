@@ -1,0 +1,435 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Admin - Barbearia Estilo</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-1: #f0f9f0;
+      --bg-2: #ffffff;
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-strong: rgba(255, 255, 255, 0.98);
+      --text-light: #14532d;
+      --text-dark: #123524;
+      --brand: #198754;
+      --brand-soft: #dff7e5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(25, 135, 84, 0.10), transparent 26%),
+        radial-gradient(circle at right bottom, rgba(25, 135, 84, 0.08), transparent 24%),
+        linear-gradient(180deg, #f3fbf3, #ffffff 58%, #edf8ef);
+      color: var(--text-dark);
+    }
+
+    .auth-shell {
+      width: min(1100px, 100%);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      border-radius: 30px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(25, 135, 84, 0.14);
+      box-shadow: 0 24px 60px rgba(25, 135, 84, 0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .auth-brand {
+      position: relative;
+      padding: 2.6rem;
+      min-height: 100%;
+      background:
+        linear-gradient(135deg, rgba(240, 249, 240, 0.98), rgba(214, 243, 221, 0.98)),
+        url("{% static 'img/barbearia-bg.jpg' %}") center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2rem;
+      border-right: 1px solid rgba(25, 135, 84, 0.12);
+    }
+
+    .auth-brand::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(25, 135, 84, 0.12), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(25, 135, 84, 0.08), transparent 28%);
+      pointer-events: none;
+    }
+
+    .auth-brand > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-badge,
+    .form-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: fit-content;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+    }
+
+    .brand-badge {
+      color: #14532d;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(25, 135, 84, 0.12);
+      box-shadow: 0 8px 20px rgba(25, 135, 84, 0.08);
+    }
+
+    .auth-brand h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      line-height: 1.03;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      max-width: 12ch;
+      color: #14532d;
+    }
+
+    .auth-brand p {
+      margin: 0;
+      max-width: 42ch;
+      color: #4a6b57;
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .brand-points {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .brand-point {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      padding: 1rem 1.05rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(25, 135, 84, 0.10);
+      box-shadow: 0 8px 20px rgba(25, 135, 84, 0.06);
+    }
+
+    .brand-point i {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #198754;
+      background: rgba(25, 135, 84, 0.12);
+      font-size: 1rem;
+    }
+
+    .brand-point strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      color: #134b2c;
+    }
+
+    .brand-point span {
+      color: #476658;
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .brand-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      color: #4a6b57;
+      font-size: 0.92rem;
+    }
+
+    .brand-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .auth-form {
+      padding: 2.6rem;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 244, 0.96));
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-form h2 {
+      margin: 0.9rem 0 0.6rem;
+      font-size: clamp(1.7rem, 3vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .auth-form .lead {
+      margin-bottom: 1.4rem;
+      color: #5a6f60;
+      line-height: 1.6;
+    }
+
+    .input-group {
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .input-group-text {
+      background: #f0f9f0;
+      border-color: #cfe6d6;
+      color: var(--brand);
+    }
+
+    .form-control {
+      border-color: #cfe6d6;
+      padding: 0.95rem 1rem;
+      font-size: 1rem;
+      background: #fff;
+      color: var(--text-dark);
+    }
+
+    .form-control:focus {
+      border-color: #198754;
+      box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.12);
+    }
+
+    .toggle-password {
+      cursor: pointer;
+    }
+
+    .forgot-password {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.9rem;
+      color: var(--brand);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 1.2rem;
+      border: none;
+      border-radius: 16px;
+      padding: 0.95rem 1rem;
+      background: linear-gradient(135deg, #198754, #34c06d);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 14px 30px rgba(25, 135, 84, 0.28);
+    }
+
+    .login-btn:hover {
+      color: #fff;
+      box-shadow: 0 18px 36px rgba(25, 135, 84, 0.36);
+    }
+
+    .form-note {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 16px;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #cdeed8;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .auth-links {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+
+    .auth-links .btn {
+      border-radius: 14px;
+      padding: 0.8rem 1rem;
+    }
+
+    .btn-outline-success {
+      border-color: rgba(25, 135, 84, 0.22);
+      color: #198754;
+      background: #fff;
+    }
+
+    .btn-outline-success:hover {
+      background: #198754;
+      color: #fff;
+    }
+
+    .messages-wrap {
+      display: grid;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 991.98px) {
+      .auth-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-brand {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      body {
+        padding: 0.75rem;
+      }
+
+      .auth-brand,
+      .auth-form {
+        padding: 1.6rem;
+      }
+
+      .brand-point {
+        padding: 0.9rem;
+      }
+
+      .brand-point i {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+      }
+    }
+  </style>
+</head>
+<body class="site-auth">
+  {% include "barbearia/partials/site_chrome.html" %}
+
+  <main class="site-auth-page">
+  <div class="auth-shell">
+    <section class="auth-brand">
+      <div>
+        <span class="brand-badge"><i class="fa-solid fa-scissors"></i> Barbearia Estilo</span>
+        <h1>Área do administrador com visual mais premium</h1>
+        <p class="mt-3">Entre para acompanhar os agendamentos, atualizar serviços e cuidar da barbearia em um acesso rápido e seguro.</p>
+      </div>
+
+      <div class="brand-points">
+        <div class="brand-point">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <strong>Acesso protegido</strong>
+            <span>Usuário ou e-mail com validação de senha.</span>
+          </div>
+        </div>
+        <div class="brand-point">
+          <i class="fa-solid fa-envelope-circle-check"></i>
+          <div>
+            <strong>Recuperação por código</strong>
+            <span>Se esquecer a senha, o código chega no e-mail cadastrado.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-footer">
+        <span><i class="fa-solid fa-clock"></i> Acesso rápido ao painel</span>
+        <span><i class="fa-solid fa-calendar-check"></i> Agenda organizada</span>
+      </div>
+    </section>
+
+    <section class="auth-form">
+      <span class="form-badge text-success bg-success-subtle border border-success-subtle">
+        <i class="fa-solid fa-lock"></i> Acesso exclusivo
+      </span>
+      <h2>Entrar no painel</h2>
+      <p class="lead">Use seu usuário ou e-mail de administrador para continuar.</p>
+
+      <div class="messages-wrap">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-0" role="alert">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <form method="POST" action="{% url 'login_admin' %}">
+        {% csrf_token %}
+        <div class="mb-3 input-group">
+          <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+          <input type="text" class="form-control" id="username" name="username" value="{{ username_value|default:'' }}" placeholder="Usuário ou e-mail" autocomplete="username" required autofocus>
+        </div>
+
+        <div class="mb-2 input-group">
+          <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Senha" autocomplete="current-password" required>
+          <button class="input-group-text toggle-password" type="button" onclick="togglePassword()" aria-label="Mostrar ou ocultar senha">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+
+        <a href="{% url 'esqueceu_senha' %}" class="forgot-password">
+          <i class="fa-solid fa-circle-question"></i> Esqueci minha senha
+        </a>
+
+        <div class="form-note">
+          <i class="fa-solid fa-sparkles"></i>
+          O código de recuperação é enviado por e-mail e vale por 10 minutos.
+        </div>
+
+        <button type="submit" class="btn login-btn">
+          <i class="fa-solid fa-right-to-bracket me-2"></i> Entrar
+        </button>
+      </form>
+
+      <div class="auth-links">
+        <a href="{% url 'home' %}" class="btn btn-outline-success">
+          <i class="fa-solid fa-arrow-left me-2"></i> Voltar ao site
+        </a>
+      </div>
+    </section>
+  </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function togglePassword() {
+      const senha = document.getElementById("password");
+      const icon = document.querySelector(".toggle-password i");
+      const mostrar = senha.getAttribute("type") === "password";
+      senha.setAttribute("type", mostrar ? "text" : "password");
+      icon.classList.toggle("fa-eye", !mostrar);
+      icon.classList.toggle("fa-eye-slash", mostrar);
+    }
+  </script>
+</body>
+</html>

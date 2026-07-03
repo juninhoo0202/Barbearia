@@ -1,0 +1,1417 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barbearia Estilo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --page-bg: #eaf4ea;
+      --text: #23332b;
+      --muted: #67786f;
+      --accent: #198754;
+      --accent-strong: #12734a;
+      --topbar: #101010;
+      --topbar-text: #f4f5f4;
+      --hero-start: #2ea69b;
+      --hero-end: #4ac0a3;
+      --surface: rgba(255, 255, 255, 0.82);
+      --surface-strong: rgba(255, 255, 255, 0.94);
+      --surface-soft: rgba(248, 244, 235, 0.96);
+      --card-border: rgba(25, 135, 84, 0.12);
+      --shadow: 0 16px 34px rgba(14, 42, 31, 0.10);
+      --shadow-strong: 0 20px 42px rgba(14, 42, 31, 0.16);
+      --danger: #dc3545;
+    }
+
+    body.theme-dark {
+      --page-bg: #111814;
+      --text: #eef4ee;
+      --muted: #a9b7af;
+      --topbar: #0b0b0b;
+      --topbar-text: #f8faf8;
+      --hero-start: #145347;
+      --hero-end: #0f4337;
+      --surface: rgba(23, 30, 26, 0.96);
+      --surface-strong: rgba(25, 33, 29, 0.98);
+      --surface-soft: rgba(24, 31, 27, 0.96);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+      --shadow-strong: 0 20px 42px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(25, 135, 84, 0.10), transparent 26%),
+        radial-gradient(circle at top right, rgba(77, 193, 171, 0.12), transparent 22%),
+        var(--page-bg);
+      transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      background: var(--topbar);
+      color: var(--topbar-text);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-decoration: none;
+      color: var(--topbar-text);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      color: #f0a5b9;
+      font-size: 1.1rem;
+    }
+
+    .brand-text {
+      font-size: 1.05rem;
+      opacity: 0.96;
+    }
+
+    .nav-menu-btn {
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border-radius: 14px;
+      padding: 0.65rem 0.95rem;
+      font-weight: 700;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .nav-menu-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .site-main {
+      margin-top: -24px;
+      padding-top: 0;
+      padding-bottom: 1.75rem;
+    }
+
+    .hero-band {
+      margin-top: 0;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.10), transparent 24%),
+        linear-gradient(135deg, var(--hero-start), var(--hero-end));
+      padding: 2.9rem 0 2.15rem;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-band::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 42%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 1.15rem;
+      align-items: stretch;
+    }
+
+    .hero-copy {
+      color: #fff;
+      padding: 0.8rem 0;
+      align-self: center;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.86);
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      margin: 1rem 0 0.65rem;
+      max-width: 13ch;
+      font-size: clamp(2.6rem, 5vw, 4.55rem);
+      line-height: 0.96;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .hero-subtitle {
+      max-width: 42ch;
+      margin: 0;
+      font-size: 1.02rem;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.84);
+    }
+
+    .hero-actions {
+      margin-top: 1.3rem;
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.95rem 1.35rem;
+      border-radius: 14px;
+      background: #2d8f64;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .hero-btn:hover {
+      color: #fff;
+      background: #25744f;
+      transform: translateY(-1px);
+    }
+
+    .hero-appointments {
+      border-radius: 24px;
+      background: var(--surface-strong);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: var(--shadow-strong);
+      overflow: hidden;
+      align-self: center;
+    }
+
+    .hero-appointments-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 1rem 1.15rem 0.8rem;
+    }
+
+    .hero-appointments-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: #175c41;
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .hero-appointments-title i {
+      width: 2.3rem;
+      height: 2.3rem;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #edf2ff;
+      color: #7a67d8;
+      flex: 0 0 auto;
+    }
+
+    .hero-appointments-count {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.34rem 0.72rem;
+      border: 1px solid rgba(25, 135, 84, 0.24);
+      background: #eaf7ee;
+      color: #156c43;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hero-appointments-body {
+      padding: 0 1.15rem 1.15rem;
+    }
+
+    .appointments-empty {
+      min-height: 124px;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      text-align: center;
+      color: var(--muted);
+      background: var(--surface-soft);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 18px;
+      line-height: 1.5;
+    }
+
+    .appointment-list {
+      display: grid;
+      gap: 0.72rem;
+      max-height: 305px;
+      overflow-y: auto;
+      padding-right: 0.3rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(25, 135, 84, 0.45) transparent;
+    }
+
+    .appointment-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .appointment-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .appointment-list::-webkit-scrollbar-thumb {
+      background: rgba(25, 135, 84, 0.4);
+      border-radius: 999px;
+    }
+
+    .appointment-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.88rem 0.95rem;
+      border-radius: 18px;
+      background: #f8fbf8;
+      border: 1px solid rgba(25, 135, 84, 0.08);
+    }
+
+    .appointment-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      min-width: 0;
+    }
+
+    .appointment-avatar {
+      width: 2.55rem;
+      height: 2.55rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #dff2e6;
+      color: #10653d;
+      font-weight: 800;
+      text-transform: uppercase;
+      flex: 0 0 auto;
+    }
+
+    .appointment-name {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .appointment-meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-top: 0.16rem;
+    }
+
+    .appointment-side {
+      display: grid;
+      justify-items: end;
+      gap: 0.3rem;
+      text-align: right;
+    }
+
+    .badge-day {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 0.28rem 0.65rem;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .badge-day.bg-success {
+      background: #198754 !important;
+    }
+
+    .badge-day.bg-secondary {
+      background: #374151 !important;
+    }
+
+    .appointment-time {
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .appointment-delete {
+      border-radius: 999px;
+      padding: 0.36rem 0.72rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .cards-section {
+      padding: 1.1rem 0 1.8rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .info-card {
+      min-height: 100%;
+      padding: 1.2rem;
+      border-radius: 24px;
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .info-card-combined {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .card-section {
+      min-width: 0;
+    }
+
+    .card-section-divider {
+      padding-top: 0.95rem;
+      border-top: 1px dashed rgba(25, 135, 84, 0.2);
+    }
+
+    .info-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.95rem;
+    }
+
+    .info-card-title-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      min-width: 0;
+    }
+
+    .info-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #edf8f2;
+      color: var(--accent);
+      font-size: 1.08rem;
+      flex: 0 0 auto;
+    }
+
+    .info-title {
+      margin: 0;
+      font-size: 1.14rem;
+      font-weight: 800;
+      color: #165f3d;
+      line-height: 1.05;
+    }
+
+    .info-subtitle {
+      margin: 0.18rem 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 0.32rem 0.7rem;
+      border: 1px solid rgba(25, 135, 84, 0.24);
+      background: rgba(255, 255, 255, 0.78);
+      color: #11663d;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hours-list {
+      display: grid;
+      gap: 0.52rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hours-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .hours-list li span {
+      color: var(--muted);
+    }
+
+    .status-strip {
+      margin-top: 1rem;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.92rem;
+      letter-spacing: 0.01em;
+    }
+
+    .status-strip.success {
+      background: #2d9c63;
+    }
+
+    .status-strip.danger {
+      background: #dc3545;
+    }
+
+    .service-list {
+      display: grid;
+      gap: 0.68rem;
+    }
+
+    .service-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .service-row span {
+      color: var(--muted);
+    }
+
+    .service-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 1rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      background: #258b5b;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .service-cta:hover {
+      color: #fff;
+      background: #1f744b;
+    }
+
+    .servicos-modal-dialog {
+      max-width: 760px;
+    }
+
+    .servicos-modal {
+      border: 0;
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    .servicos-modal .modal-header {
+      padding: 1rem 1.3rem;
+      border-bottom: 1px solid #e6ebf2;
+    }
+
+    .servicos-modal-title {
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 2.05rem;
+      font-weight: 800;
+      color: #07844e;
+      letter-spacing: -0.01em;
+    }
+
+    .servicos-modal-title i {
+      font-size: 1.25rem;
+      color: #0a8b54;
+    }
+
+    .servicos-modal .btn-close {
+      opacity: 0.55;
+    }
+
+    .servicos-modal .btn-close:hover {
+      opacity: 0.85;
+    }
+
+    .servicos-modal .modal-body {
+      padding: 1rem 1rem 0.8rem;
+    }
+
+    .servicos-modal-intro {
+      margin: 0 0 0.95rem;
+      color: #4c5564;
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .servicos-modal-list {
+      margin: 0 0 1rem;
+      padding: 0;
+      list-style: none;
+      border: 1px solid #dfe5ee;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .servicos-modal-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.82rem 1rem;
+      font-size: 1.05rem;
+      border-bottom: 1px solid #e7ebf3;
+      line-height: 1.15;
+    }
+
+    .servicos-modal-item:last-child {
+      border-bottom: 0;
+    }
+
+    .servicos-modal-item strong {
+      color: #008f53;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .servicos-modal-alert {
+      border: 1px solid #f0d58a;
+      background: #fff5cf;
+      color: #5d4a1d;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      line-height: 1.25;
+      padding: 0.9rem 1rem;
+      margin: 0;
+    }
+
+    .servicos-modal-alert strong {
+      font-weight: 800;
+      color: #43320f;
+    }
+
+    .servicos-modal .modal-footer {
+      border-top: 1px solid #e6ebf2;
+      padding: 0.95rem 1rem 1.1rem;
+      gap: 0.8rem;
+    }
+
+    .servicos-modal-btn {
+      flex: 1 1 0;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 0.65rem 1rem;
+    }
+
+    .servicos-modal-btn.btn-outline-secondary {
+      border-color: #8f9bb0;
+      color: #70798b;
+      background: #fff;
+    }
+
+    .servicos-modal-btn.btn-success {
+      background: #0f8f52;
+      border-color: #0f8f52;
+      color: #fff;
+    }
+
+    .servicos-modal-btn.btn-success:hover {
+      background: #0b7a46;
+      border-color: #0b7a46;
+    }
+
+    .location-card {
+      padding: 1rem;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 251, 247, 0.94));
+      border: 1px solid rgba(25, 135, 84, 0.12);
+    }
+
+    .location-map-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(25, 135, 84, 0.15);
+      margin-bottom: 0.8rem;
+      background: #eef7f2;
+    }
+
+    .location-map {
+      width: 100%;
+      height: 170px;
+      border: 0;
+      display: block;
+    }
+
+    .location-main {
+      min-width: 0;
+    }
+
+    .location-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.38rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #4f5f56;
+      margin-bottom: 0.2rem;
+    }
+
+    .location-chip {
+      align-self: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.28rem 0.62rem;
+      border-radius: 999px;
+      border: 1px solid rgba(25, 135, 84, 0.22);
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #146942;
+      white-space: nowrap;
+      background: #f2fbf5;
+    }
+
+    .location-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 0.2rem;
+    }
+
+    .location-name {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .location-city {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .location-note {
+      margin-top: 0.75rem;
+      color: #157347;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .location-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.95rem;
+    }
+
+    .location-actions .btn {
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .quick-card {
+      display: grid;
+      align-content: start;
+    }
+
+    .quick-card-body {
+      padding: 1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(25, 135, 84, 0.18);
+      background: linear-gradient(135deg, #f8fff9, #eefaf2);
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .quick-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: center;
+      border-bottom: 1px dashed rgba(25, 135, 84, 0.18);
+      padding-bottom: 0.55rem;
+    }
+
+    .quick-row:last-of-type {
+      border-bottom: 0;
+      padding-bottom: 0.15rem;
+    }
+
+    .quick-row span {
+      color: #5f6f66;
+      font-size: 0.9rem;
+    }
+
+    .quick-row strong {
+      color: #146942;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .menu-offcanvas {
+      background: linear-gradient(180deg, #f5fbf6, #ffffff);
+    }
+
+    .menu-offcanvas .offcanvas-header {
+      border-bottom: 1px solid rgba(25, 135, 84, 0.14);
+    }
+
+    .menu-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1.05rem 0 0.55rem;
+      color: #198754;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .menu-card {
+      border-radius: 20px;
+      border: 1px solid rgba(25, 135, 84, 0.12);
+      background: rgba(255, 255, 255, 0.92);
+      padding: 0.4rem;
+      box-shadow: 0 10px 22px rgba(14, 42, 31, 0.06);
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.8rem 0.92rem;
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    .menu-link:hover {
+      background: rgba(25, 135, 84, 0.08);
+      color: var(--text);
+      transform: translateX(2px);
+    }
+
+    .menu-link i {
+      color: #198754;
+      flex: 0 0 auto;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .social-badge {
+      width: 2.8rem;
+      height: 2.8rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      text-decoration: none;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.10);
+    }
+
+    .social-whatsapp { background: #198754; }
+    .social-instagram { background: #dc3545; }
+    .social-facebook { background: #1f2937; }
+
+    .appearance-btn {
+      width: 100%;
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-weight: 700;
+    }
+
+    .theme-dark .appearance-btn {
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text);
+    }
+
+    .footer-note {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    .copy-hint {
+      cursor: pointer;
+    }
+
+    @media (max-width: 1199.98px) {
+      .hero-grid,
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-title {
+        max-width: 100%;
+      }
+
+      .info-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 991.98px) {
+      .hero-band {
+        padding: 2.1rem 0 1.7rem;
+      }
+
+      .hero-grid {
+        gap: 0.95rem;
+      }
+
+      .hero-copy {
+        padding: 0.2rem 0 0;
+      }
+
+      .hero-appointments {
+        border-radius: 20px;
+      }
+
+      .appointment-list {
+        max-height: 260px;
+      }
+
+      .cards-section {
+        padding: 0.95rem 0 1.45rem;
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .hero-band {
+        padding: 1.8rem 0 1.4rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 10.8vw, 2.85rem);
+        line-height: 0.97;
+        max-width: 100%;
+      }
+
+      .hero-subtitle {
+        font-size: 0.97rem;
+        line-height: 1.5;
+      }
+
+      .hero-actions {
+        margin-top: 1rem;
+      }
+
+      .hero-btn {
+        width: 100%;
+        justify-content: center;
+        border-radius: 12px;
+        padding: 0.82rem 1rem;
+      }
+
+      .hero-appointments-head,
+      .hero-appointments-body {
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+      }
+
+      .hero-appointments-head {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .hero-appointments-title {
+        font-size: 0.98rem;
+      }
+
+      .hero-appointments-title i {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 10px;
+      }
+
+      .hero-appointments-count {
+        font-size: 0.76rem;
+      }
+
+      .appointment-list {
+        max-height: 230px;
+      }
+
+      .appointment-item {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+        padding: 0.75rem;
+      }
+
+      .appointment-side {
+        justify-items: start;
+        text-align: left;
+      }
+
+      .appointment-name {
+        font-size: 0.94rem;
+      }
+
+      .appointment-meta,
+      .appointment-time {
+        font-size: 0.9rem;
+      }
+
+      .cards-grid {
+        gap: 0.8rem;
+      }
+
+      .info-card {
+        padding: 0.95rem;
+        border-radius: 18px;
+      }
+
+      .info-card-head {
+        margin-bottom: 0.7rem;
+      }
+
+      .info-title {
+        font-size: 1rem;
+      }
+
+      .info-subtitle {
+        font-size: 0.88rem;
+      }
+
+      .service-row,
+      .hours-list li,
+      .quick-row {
+        font-size: 0.9rem;
+      }
+
+      .location-map {
+        height: 190px;
+      }
+
+      .location-actions .btn {
+        flex: 1 1 100%;
+      }
+
+      .servicos-modal-dialog {
+        max-width: calc(100% - 1.2rem);
+      }
+
+      .servicos-modal-title {
+        font-size: 1.35rem;
+      }
+
+      .servicos-modal-title i {
+        font-size: 1.2rem;
+      }
+
+      .servicos-modal-intro {
+        font-size: 1.08rem;
+      }
+
+      .servicos-modal-item {
+        font-size: 1.07rem;
+      }
+
+      .servicos-modal-alert {
+        font-size: 1.02rem;
+      }
+
+      .servicos-modal-btn {
+        font-size: 1.05rem;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .site-main {
+        padding-bottom: 1.1rem;
+      }
+
+      .hero-band .container,
+      .cards-section .container {
+        padding-left: 0.72rem;
+        padding-right: 0.72rem;
+      }
+
+      .hero-kicker {
+        font-size: 0.78rem;
+      }
+
+      .hero-title {
+        font-size: clamp(1.82rem, 11.2vw, 2.45rem);
+      }
+
+      .hero-subtitle {
+        font-size: 0.92rem;
+      }
+
+      .appointments-empty {
+        min-height: 100px;
+        font-size: 0.92rem;
+      }
+
+      .appointment-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      .location-map {
+        height: 165px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .hero-title {
+        font-size: clamp(1.65rem, 11.8vw, 2.1rem);
+      }
+
+      .hero-btn {
+        font-size: 0.96rem;
+      }
+
+      .info-icon {
+        width: 2.35rem;
+        height: 2.35rem;
+        font-size: 0.96rem;
+      }
+
+      .info-title {
+        font-size: 0.95rem;
+      }
+
+      .location-name {
+        font-size: 0.98rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% include "barbearia/partials/site_chrome.html" %}
+  <main class="site-main">{% include "barbearia/home.html" %}</main>
+
+  <div class="offcanvas offcanvas-start menu-offcanvas" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralLabel">
+    <div class="offcanvas-header">
+      <div>
+        <h5 class="offcanvas-title fw-bold text-success mb-0" id="menuLateralLabel">Barbearia Estilo</h5>
+        <small class="text-muted">Navegação rápida</small>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+
+    <div class="offcanvas-body">
+      <div class="menu-label"><i class="bi bi-shield-lock-fill"></i> Área Administrativa</div>
+      <div class="menu-card">
+        <a href="{% url 'admin_login' %}" class="menu-link">
+          <i class="bi bi-shield-lock-fill"></i> Painel Administrador
+        </a>
+      </div>
+
+      <div class="menu-label"><i class="bi bi-compass"></i> Navegação</div>
+      <div class="menu-card">
+        <a href="{% url 'home' %}" class="menu-link">
+          <i class="bi bi-house-door-fill"></i> Página Inicial
+        </a>
+        <a href="{% url 'agendar' %}" class="menu-link">
+          <i class="bi bi-calendar-check-fill"></i> Agendar Horários
+        </a>
+        <a href="#servicos" class="menu-link">
+          <i class="bi bi-scissors"></i> Serviços e Preços
+        </a>
+        <button type="button" class="menu-link" data-bs-toggle="modal" data-bs-target="#pagamentoModal">
+          <i class="bi bi-cash-stack"></i> Formas de Pagamento
+        </button>
+      </div>
+
+      <div class="menu-label"><i class="bi bi-share-fill"></i> Redes Sociais</div>
+      <div class="menu-card">
+        <div class="social-row px-2 py-1">
+          <a href="{{ barbearia.whatsapp_url }}" target="_blank" rel="noopener" class="social-badge social-whatsapp" title="WhatsApp">
+            <i class="bi bi-whatsapp"></i>
+          </a>
+          <a href="{{ barbearia.instagram_url }}" target="_blank" rel="noopener" class="social-badge social-instagram" title="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a href="{{ barbearia.facebook_url }}" target="_blank" rel="noopener" class="social-badge social-facebook" title="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="menu-label"><i class="bi bi-palette-fill"></i> Aparência</div>
+      <button type="button" id="toggleTheme" class="btn btn-outline-success appearance-btn">
+        <i class="bi bi-moon-stars me-1"></i> Alternar tema
+      </button>
+
+      <div class="footer-note">
+        Menu pensado para chegar rápido ao que importa.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="pagamentoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-success">
+        <div class="modal-header">
+          <h5 class="modal-title text-success fw-bold">Formas de Pagamento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="mb-0">
+            <li>Dinheiro</li>
+            <li>Cartão de Crédito</li>
+            <li>Cartão de Débito</li>
+            <li>Pix</li>
+            <li>Transferência Bancária</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success w-100" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const copyButtons = document.querySelectorAll("[data-copy-address]");
+    const themeToggle = document.getElementById("toggleTheme");
+    const themeStorageKey = "barbearia-theme";
+    const cancelModalEl = document.getElementById("cancelarModal");
+    const cancelarResumo = document.getElementById("cancelarModalResumo");
+    const cancelarCodigoInput = document.getElementById("cancelarCodigoInput");
+    const confirmarCancelamentoBtn = document.getElementById("confirmarCancelamentoBtn");
+    const openCancelButtons = document.querySelectorAll(".js-open-cancel-modal");
+    const adminExcluirModalEl = document.getElementById("adminExcluirModal");
+    const adminExcluirResumo = document.getElementById("adminExcluirResumo");
+    const confirmarExcluirAdminBtn = document.getElementById("confirmarExcluirAdminBtn");
+    const adminDeleteForms = document.querySelectorAll(".js-admin-delete-form");
+    const openAdminDeleteButtons = document.querySelectorAll(".js-open-admin-delete-modal");
+    let activeCancelForm = null;
+    let activeAdminDeleteForm = null;
+    let activeAdminDeleteId = null;
+
+    function copyText(text, trigger) {
+      if (!text) return;
+
+      const original = trigger ? trigger.innerHTML : "";
+      const restore = () => {
+        if (trigger) {
+          trigger.innerHTML = original;
+        }
+      };
+
+      const complete = () => {
+        if (trigger) {
+          trigger.innerHTML = '<i class="bi bi-check2 me-1"></i> Copiado';
+          setTimeout(restore, 1300);
+        }
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(complete).catch(() => {});
+        return;
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        complete();
+      } finally {
+        textarea.remove();
+      }
+    }
+
+    copyButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        copyText(button.dataset.copyAddress || "", button);
+      });
+    });
+
+    if (localStorage.getItem(themeStorageKey) === "dark") {
+      document.body.classList.add("theme-dark");
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("theme-dark");
+        localStorage.setItem(themeStorageKey, document.body.classList.contains("theme-dark") ? "dark" : "light");
+      });
+    }
+
+    if (cancelModalEl && confirmarCancelamentoBtn && cancelarCodigoInput) {
+      const cancelModal = new bootstrap.Modal(cancelModalEl);
+
+      openCancelButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const formId = button.dataset.formId;
+          activeCancelForm = formId ? document.getElementById(formId) : null;
+          const cliente = button.dataset.cliente || "Cliente";
+          const data = button.dataset.data || "";
+          const hora = button.dataset.hora || "";
+          if (cancelarResumo) {
+            cancelarResumo.textContent = `${cliente} - ${data} às ${hora}. Digite seu código para confirmar o cancelamento.`;
+          }
+          cancelarCodigoInput.value = "";
+          cancelModal.show();
+          setTimeout(() => cancelarCodigoInput.focus(), 150);
+        });
+      });
+
+      confirmarCancelamentoBtn.addEventListener("click", () => {
+        const codigo = (cancelarCodigoInput.value || "").trim();
+        if (!activeCancelForm || !codigo) {
+          cancelarCodigoInput.focus();
+          return;
+        }
+        const codigoField = activeCancelForm.querySelector("input[name='codigo_cancelamento']");
+        if (!codigoField) {
+          return;
+        }
+        codigoField.value = codigo;
+        cancelModal.hide();
+        activeCancelForm.submit();
+      });
+    }
+
+    if (adminExcluirModalEl && confirmarExcluirAdminBtn) {
+      const adminExcluirModal = new bootstrap.Modal(adminExcluirModalEl);
+
+      adminDeleteForms.forEach((form) => {
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+        });
+      });
+
+      openAdminDeleteButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const formId = button.dataset.formId;
+          activeAdminDeleteId = button.dataset.agendamentoId || null;
+          activeAdminDeleteForm = formId ? document.getElementById(formId) : null;
+          const cliente = button.dataset.cliente || "Cliente";
+          const data = button.dataset.data || "";
+          const hora = button.dataset.hora || "";
+          if (adminExcluirResumo) {
+            adminExcluirResumo.textContent = `Excluir agendamento de ${cliente} - ${data} às ${hora}?`;
+          }
+          adminExcluirModal.show();
+        });
+      });
+
+      confirmarExcluirAdminBtn.addEventListener("click", () => {
+        if (!activeAdminDeleteForm || !activeAdminDeleteId) return;
+        adminExcluirModal.hide();
+        const csrfInput = activeAdminDeleteForm.querySelector("input[name='csrfmiddlewaretoken']");
+        const csrfToken = csrfInput ? csrfInput.value : "";
+        const excluirUrl = `/excluir/${activeAdminDeleteId}/`;
+
+        fetch(excluirUrl, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "X-Requested-With": "XMLHttpRequest",
+            Accept: "application/json",
+          },
+          credentials: "same-origin",
+        })
+          .then((resp) => resp.json().catch(() => null))
+          .then((data) => {
+            if (data && data.ok) {
+              window.location.reload();
+              return;
+            }
+            alert((data && (data.msg || data.message)) || "Erro ao excluir agendamento.");
+          })
+          .catch(() => {
+            alert("Erro de rede ao excluir agendamento.");
+          });
+      });
+    }
+  </script>
+</body>
+</html>
