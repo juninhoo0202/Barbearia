@@ -610,57 +610,62 @@ body {
 
 <div class="container py-4">
   <div class="booking-hero mb-4">
-    <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-4">
-      <div class="flex-grow-1">
-        <span class="booking-kicker"><i class="bi bi-calendar2-check"></i>Agendamento organizado</span>
-        <h1 class="display-6 fw-bold text-success mt-3 mb-2">Reserve seu horário com poucos toques</h1>
-        <p class="text-muted fs-5 mb-0">
-          Escolha o serviço, toque em uma data rápida e selecione o horário ideal. No final, o código de cancelamento fica salvo para você.
-        </p>
-        <div class="booking-feature-pills">
-          <span class="booking-feature-pill">
-            <i class="bi bi-check2-circle"></i> Código de cancelamento
-          </span>
-          <span class="booking-feature-pill">
-            <i class="bi bi-whatsapp"></i> Envio no WhatsApp
-          </span>
-          <span class="booking-feature-pill">
-            <i class="bi bi-lightning-charge"></i> Fluxo rápido
-          </span>
-        </div>
+    <div class="pe-xl-4">
+      <span class="booking-kicker"><i class="bi bi-calendar2-check"></i>Agendamento organizado</span>
+      <h1 class="display-6 fw-bold text-success mt-3 mb-2">Reserve seu horário com poucos toques</h1>
+      <p class="text-muted fs-5 mb-0">
+        Escolha o serviço, toque em uma data rápida e selecione o horário ideal. No final, o código de cancelamento fica salvo para você.
+      </p>
+      <div class="booking-feature-pills">
+        <span class="booking-feature-pill">
+          <i class="bi bi-check2-circle"></i> Código de cancelamento
+        </span>
+        <span class="booking-feature-pill">
+          <i class="bi bi-whatsapp"></i> Envio no WhatsApp
+        </span>
+        <span class="booking-feature-pill">
+          <i class="bi bi-lightning-charge"></i> Fluxo rápido
+        </span>
+      </div>
 
-        <div id="agendamentoGuardado" class="success-panel d-none mt-3">
-          <div class="d-flex justify-content-between gap-3 align-items-start">
-            <div>
-              <span class="badge bg-light text-success">Agendamento confirmado</span>
-              <h3 class="h5 fw-bold mt-3 mb-2">Seu código de cancelamento está salvo aqui</h3>
-              <p class="success-note mb-0" id="guardadoDescricao">Guarde este código para cancelar depois, se precisar.</p>
-            </div>
-            <button type="button" class="btn-close btn-close-white" id="fecharGuardadoBtn" aria-label="Fechar"></button>
+      <div id="agendamentoGuardado" class="success-panel d-none mt-3">
+        <div class="d-flex justify-content-between gap-3 align-items-start">
+          <div>
+            <span class="badge bg-light text-success">Agendamento confirmado</span>
+            <h3 class="h5 fw-bold mt-3 mb-2">Seu código de cancelamento está salvo aqui</h3>
+            <p class="success-note mb-0" id="guardadoDescricao">Guarde este código para cancelar depois, se precisar.</p>
           </div>
-          <div class="success-code" id="guardadoCodigo">----</div>
-          <div class="success-actions">
-            <button type="button" class="btn btn-light text-success fw-semibold" id="copiarGuardadoBtn">
-              <i class="bi bi-clipboard me-1"></i> Copiar código
-            </button>
-            <button type="button" class="btn btn-outline-light fw-semibold" id="jaSalveiBtn">
-              Já salvei
-            </button>
-          </div>
+          <button type="button" class="btn-close btn-close-white" id="fecharGuardadoBtn" aria-label="Fechar"></button>
+        </div>
+        <div class="success-code" id="guardadoCodigo">----</div>
+        <div class="success-actions">
+          <button type="button" class="btn btn-light text-success fw-semibold" id="copiarGuardadoBtn">
+            <i class="bi bi-clipboard me-1"></i> Copiar código
+          </button>
+          <button type="button" class="btn btn-outline-light fw-semibold" id="jaSalveiBtn">
+            Já salvei
+          </button>
         </div>
       </div>
-      <div class="booking-stats">
-        <div class="booking-stat">
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="booking-stat h-100">
           <div class="booking-stat-title"><i class="bi bi-clock-history"></i> Próximo horário livre</div>
           <strong id="topProximoHorario">{{ proximo_horario_livre.texto|default:"Sem horários próximos" }}</strong>
           <small class="text-muted" id="topProximoHorarioData">{{ proximo_horario_livre.data_formatada|default:"" }}</small>
         </div>
-        <div class="booking-stat">
+      </div>
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="booking-stat h-100">
           <div class="booking-stat-title"><i class="bi bi-calendar3"></i> Fluxo rápido</div>
           <strong>Hoje, amanhã e próximos dias</strong>
           <small class="text-muted">Os horários ocupados já aparecem bloqueados automaticamente.</small>
         </div>
-        <div class="booking-stat">
+      </div>
+      <div class="col-12 col-xl-4">
+        <div class="booking-stat h-100">
           <div class="booking-stat-title"><i class="bi bi-shield-check"></i> Regra de cancelamento</div>
           <strong>Cancelamento até 2h antes</strong>
           <small class="text-muted">Depois desse prazo, o horário fica sujeito à confirmação da barbearia.</small>
@@ -679,122 +684,147 @@ body {
 
   <div class="row g-4 align-items-start">
     <div class="col-12">
-      <form id="agendamentoForm" method="POST" class="form-box">
+      <form id="agendamentoForm" method="POST" class="form-box bg-transparent p-0 shadow-none border-0">
         {% csrf_token %}
 
-        <div class="section-label"><i class="bi bi-person-vcard"></i>1. Dados do cliente</div>
-        <div class="mb-3 input-group">
-          <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-          <input
-            type="text"
-            class="form-control"
-            id="cliente"
-            name="cliente"
-            required
-            minlength="3"
-            maxlength="80"
-            autocomplete="name"
-            placeholder="Digite seu nome completo"
-          >
-        </div>
-        <small class="text-muted d-block mb-3">Use nome e sobrenome para facilitar sua identificação.</small>
-
-        <div class="mb-3 input-group">
-          <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-          <input
-            type="tel"
-            class="form-control"
-            id="telefone"
-            name="telefone"
-            required
-            inputmode="numeric"
-            autocomplete="tel-national"
-            maxlength="15"
-            placeholder="(99) 99999-9999"
-          >
-        </div>
-        <small class="text-muted d-block mb-1" id="telefoneHint">Informe DDD + número (11 dígitos).</small>
-
-        <div class="section-label mt-4"><i class="bi bi-scissors"></i>2. Serviço</div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Serviço</label>
-          <div id="servicosContainer" class="slot-grid"></div>
-          <small class="text-muted d-block mt-2">Toque na caixinha do serviço desejado.</small>
-          <select class="d-none" id="servico" name="servico" aria-hidden="true" tabindex="-1">
-            <option value="" disabled selected>Selecione o serviço</option>
-            {% for s in servicos %}
-              <option value="{{ s.id }}" data-preco="{{ s.preco }}">
-                {{ s.nome }} - R$ {{ s.preco }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="preview-box mb-3" id="servicoPreview">
-          <div class="fw-bold text-success mb-2"><i class="bi bi-scissors me-2"></i>Serviço selecionado</div>
-          <div class="d-flex justify-content-between gap-3">
-            <span>Nome</span>
-            <strong id="previewNome" class="text-end">Selecione um serviço</strong>
-          </div>
-          <div class="d-flex justify-content-between gap-3">
-            <span>Preço</span>
-            <strong id="previewPreco" class="text-end">-</strong>
+        <div class="card border-success-subtle shadow-sm rounded-4 p-3 p-md-4 mb-3 bg-white">
+          <div class="section-label"><i class="bi bi-person-vcard"></i>1. Dados do cliente</div>
+          <div class="row g-3 mb-1">
+            <div class="col-12 col-lg-7">
+              <label for="cliente" class="form-label fw-semibold">Nome completo</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cliente"
+                  name="cliente"
+                  required
+                  minlength="3"
+                  maxlength="80"
+                  autocomplete="name"
+                  placeholder="Digite seu nome completo"
+                >
+              </div>
+              <small class="text-muted d-block mt-2">Use nome e sobrenome para facilitar sua identificação.</small>
+            </div>
+            <div class="col-12 col-lg-5">
+              <label for="telefone" class="form-label fw-semibold">Telefone (WhatsApp)</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="telefone"
+                  name="telefone"
+                  required
+                  inputmode="numeric"
+                  autocomplete="tel-national"
+                  maxlength="15"
+                  placeholder="(99) 99999-9999"
+                >
+              </div>
+              <small class="text-muted d-block mt-2" id="telefoneHint">Informe DDD + número (11 dígitos).</small>
+            </div>
           </div>
         </div>
 
-        <div class="section-label mt-4"><i class="bi bi-calendar2-week"></i>3. Data e horário</div>
-        <div class="day-pills mb-3" id="datasRapidas"></div>
-
-        <div class="mb-3">
-          <label for="data" class="form-label fw-semibold">Data escolhida</label>
-          <input type="date" class="form-control" id="data" name="data" required>
-          <small id="dataInfo" class="text-muted d-block mt-2">Toque em uma data rápida para agilizar.</small>
-        </div>
-
-        <input type="hidden" id="hora" name="hora">
-
-        <div class="mb-3">
-          <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
-            <label class="form-label fw-semibold mb-0">Horário</label>
-            <span class="badge bg-success-subtle text-success border border-success px-3 py-2" id="topHorarioBadge">Escolha uma data</span>
+        <div class="card border-success-subtle shadow-sm rounded-4 p-3 p-md-4 mb-3 bg-white">
+          <div class="section-label"><i class="bi bi-scissors"></i>2. Serviço</div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Serviço</label>
+            <div id="servicosContainer" class="row g-2"></div>
+            <small class="text-muted d-block mt-2">Toque no serviço desejado.</small>
+            <select class="d-none" id="servico" name="servico" aria-hidden="true" tabindex="-1">
+              <option value="" disabled selected>Selecione o serviço</option>
+              {% for s in servicos %}
+                <option value="{{ s.id }}" data-preco="{{ s.preco }}">
+                  {{ s.nome }} - R$ {{ s.preco }}
+                </option>
+              {% endfor %}
+            </select>
           </div>
-          <div id="horariosContainer" class="slot-grid"></div>
-          <small id="horarioInfo" class="text-muted d-block mt-2">Os horários disponíveis aparecem em botões verdes.</small>
-        </div>
 
-        <div class="section-label mt-4"><i class="bi bi-chat-dots"></i>4. Observações</div>
-        <div class="mb-3">
-          <label for="observacoes" class="form-label fw-semibold">Observações</label>
-          <textarea class="form-control" id="observacoes" name="observacoes" placeholder="Alguma observação importante?"></textarea>
-        </div>
-
-        <div class="summary-box booking-summary-box mb-3">
-          <div class="booking-summary-title"><i class="bi bi-receipt-cutoff"></i>Resumo do agendamento</div>
-          <div class="summary-row">
-            <span>Cliente</span>
-            <strong id="resumoCliente">Preencha o nome</strong>
-          </div>
-          <div class="summary-row">
-            <span>Serviço</span>
-            <strong id="resumoServico">Selecione um serviço</strong>
-          </div>
-          <div class="summary-row">
-            <span>Data</span>
-            <strong id="resumoData">Escolha uma data</strong>
-          </div>
-          <div class="summary-row">
-            <span>Hora</span>
-            <strong id="resumoHora">Escolha um horário</strong>
-          </div>
-          <div class="summary-row is-total">
-            <span>Valor</span>
-            <strong id="resumoValor">-</strong>
+          <div class="preview-box mb-0" id="servicoPreview">
+            <div class="fw-bold text-success mb-2"><i class="bi bi-scissors me-2"></i>Serviço selecionado</div>
+            <div class="d-flex justify-content-between gap-3">
+              <span>Nome</span>
+              <strong id="previewNome" class="text-end">Selecione um serviço</strong>
+            </div>
+            <div class="d-flex justify-content-between gap-3">
+              <span>Preço</span>
+              <strong id="previewPreco" class="text-end">-</strong>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100 btn-lg" id="btnAgendar">
-          <span id="btnAgendarText">Agendar horário</span>
-        </button>
+        <div class="card border-success-subtle shadow-sm rounded-4 p-3 p-md-4 mb-3 bg-white">
+          <div class="section-label"><i class="bi bi-calendar2-week"></i>3. Data e horário</div>
+          <div class="day-pills mb-3" id="datasRapidas"></div>
+
+          <div class="mb-3">
+            <label for="data" class="form-label fw-semibold">Data escolhida</label>
+            <input type="date" class="form-control" id="data" name="data" required>
+            <small id="dataInfo" class="text-muted d-block mt-2">Toque em uma data rápida para agilizar.</small>
+          </div>
+
+          <input type="hidden" id="hora" name="hora">
+
+          <div class="mb-0">
+            <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 mb-2">
+              <label class="form-label fw-semibold mb-0">Horário</label>
+              <span class="badge bg-success-subtle text-success border border-success px-3 py-2 align-self-start align-self-sm-auto" id="topHorarioBadge">Escolha uma data</span>
+            </div>
+            <div id="horariosContainer" class="row g-2"></div>
+            <small id="horarioInfo" class="text-muted d-block mt-2">Escolha um horário disponível para liberar o botão de agendamento.</small>
+          </div>
+        </div>
+
+        <div class="card border-success-subtle shadow-sm rounded-4 p-3 p-md-4 mb-3 bg-white">
+          <div class="section-label"><i class="bi bi-chat-dots"></i>4. Observações</div>
+          <div class="mb-0">
+            <label for="observacoes" class="form-label fw-semibold">Observações</label>
+            <textarea class="form-control" id="observacoes" name="observacoes" placeholder="Alguma observação importante?"></textarea>
+          </div>
+        </div>
+
+        <div class="card border-success-subtle shadow-sm rounded-4 p-3 p-md-4 mb-0 bg-white">
+          <div class="summary-box booking-summary-box mb-3">
+            <div class="booking-summary-title"><i class="bi bi-receipt-cutoff"></i>Resumo do agendamento</div>
+            <div class="summary-row">
+              <span>Cliente</span>
+              <strong id="resumoCliente">Preencha o nome</strong>
+            </div>
+            <div class="summary-row">
+              <span>Serviço</span>
+              <strong id="resumoServico">Selecione um serviço</strong>
+            </div>
+            <div class="summary-row">
+              <span>Data</span>
+              <strong id="resumoData">Escolha uma data</strong>
+            </div>
+            <div class="summary-row">
+              <span>Hora</span>
+              <strong id="resumoHora">Escolha um horário</strong>
+            </div>
+            <div class="summary-row is-total">
+              <span>Valor</span>
+              <strong id="resumoValor">-</strong>
+            </div>
+          </div>
+
+          <div class="alert alert-success-subtle border border-success-subtle rounded-4 py-2 px-3 mb-3" role="status">
+            <div class="d-flex align-items-center gap-2 fw-semibold text-success-emphasis">
+              <i class="bi bi-check2-circle"></i>
+              <span>Confirmação inteligente</span>
+            </div>
+            <small class="text-muted d-block mt-1" id="confirmacaoHint">Preencha nome, telefone, serviço, data e horário para agendar.</small>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 btn-lg py-3" id="btnAgendar" disabled>
+            <span id="btnAgendarText">Agendar horário</span>
+          </button>
+        </div>
       </form>
     </div>
 
@@ -1015,6 +1045,7 @@ const copiarModalCodigoBtn = document.getElementById("copiarModalCodigoBtn");
 const jaSalveiModalBtn = document.getElementById("jaSalveiModalBtn");
 const toggleBtn = document.getElementById("toggleDarkMode");
 const body = document.body;
+const confirmacaoHint = document.getElementById("confirmacaoHint");
 
 const hoje = new Date();
 const diaSemana = hoje.getDay();
@@ -1092,6 +1123,35 @@ function normalizarNome(valor) {
 
 function formatarPreco(valor) {
   return `R$ ${String(valor || "").replace(".", ",")}`;
+}
+
+function telefoneValido() {
+  return inputTelefone.value.replace(/\D/g, "").length >= 10;
+}
+
+function atualizarEstadoBotaoAgendar() {
+  const nomeValido = inputCliente.value.trim().length >= 3;
+  const servicoValido = Boolean(selectServico.value);
+  const dataValida = Boolean(inputData.value);
+  const horaValida = Boolean(inputHora.value);
+  const pronto = nomeValido && telefoneValido() && servicoValido && dataValida && horaValida;
+
+  btnAgendar.disabled = !pronto;
+  btnAgendar.setAttribute("aria-disabled", pronto ? "false" : "true");
+
+  if (!confirmacaoHint) return;
+  if (pronto) {
+    confirmacaoHint.textContent = "Tudo certo! Agora é só clicar em Agendar horário.";
+    return;
+  }
+
+  const pendencias = [];
+  if (!nomeValido) pendencias.push("nome");
+  if (!telefoneValido()) pendencias.push("telefone");
+  if (!servicoValido) pendencias.push("serviço");
+  if (!dataValida) pendencias.push("data");
+  if (!horaValida) pendencias.push("horário");
+  confirmacaoHint.textContent = `Falta preencher: ${pendencias.join(", ")}.`;
 }
 
 function mostrarFeedback(tipo, mensagem) {
@@ -1178,15 +1238,23 @@ function renderizarServicos() {
     const nome = option.textContent.split(" - ")[0].trim();
     const botao = document.createElement("button");
     botao.type = "button";
-    botao.className = "slot-chip btn";
+    botao.className = "slot-chip service-chip btn btn-outline-success w-100 py-3 d-inline-flex flex-column align-items-center align-items-sm-start justify-content-center gap-1 text-center text-sm-start";
     botao.dataset.value = option.value;
     botao.setAttribute("aria-pressed", option.value === selectServico.value ? "true" : "false");
-    botao.innerHTML = `<strong>${nome}</strong>`;
+    botao.innerHTML = `
+      <strong>${nome}</strong>
+      <small class="small">${formatarPreco(option.dataset.preco || "")}</small>
+    `;
     botao.addEventListener("click", () => {
       selectServico.value = option.value;
       atualizarPreviewServico();
+      atualizarEstadoBotaoAgendar();
     });
-    servicosContainer.appendChild(botao);
+
+    const coluna = document.createElement("div");
+    coluna.className = "col-12 col-sm-6";
+    coluna.appendChild(botao);
+    servicosContainer.appendChild(coluna);
   });
 
   destacarServicoAtivo();
@@ -1205,6 +1273,7 @@ function atualizarResumo() {
   resumoData.textContent = dataSelecionada;
   resumoHora.textContent = horaSelecionada;
   resumoValor.textContent = precoSelecionado;
+  atualizarEstadoBotaoAgendar();
 }
 
 function destacarDataAtiva() {
@@ -1229,7 +1298,7 @@ function renderizarAtalhosData() {
     const iso = toISODate(cursor);
     const botao = document.createElement("button");
     botao.type = "button";
-    botao.className = "day-pill btn";
+    botao.className = "day-pill btn btn-outline-success w-100";
     botao.dataset.date = iso;
     botao.setAttribute("aria-pressed", iso === inputData.value ? "true" : "false");
     botao.innerHTML = `
@@ -1261,7 +1330,7 @@ function renderizarHorarios(horarios) {
   horariosContainer.innerHTML = "";
 
   if (!horariosDisponiveis.length) {
-    horariosContainer.innerHTML = '<div class="slot-empty">Nenhum horário livre para esta data.</div>';
+    horariosContainer.innerHTML = '<div class="col-12"><div class="slot-empty">Nenhum horário livre para esta data.</div></div>';
     topHorarioBadge.textContent = "Sem horários";
     horarioInfo.textContent = "Escolha outra data para ver opções livres.";
     inputHora.value = "";
@@ -1269,30 +1338,43 @@ function renderizarHorarios(horarios) {
     return;
   }
 
-  const horaInicial = horariosDisponiveis.includes(inputHora.value) ? inputHora.value : horariosDisponiveis[0];
-  inputHora.value = horaInicial;
+  if (!horariosDisponiveis.includes(inputHora.value)) {
+    inputHora.value = "";
+  }
 
   horariosDisponiveis.forEach((hora) => {
     const botao = document.createElement("button");
     botao.type = "button";
-    botao.className = `slot-chip btn${hora === horaInicial ? " is-selected" : ""}`;
+    botao.className = `slot-chip hour-chip btn btn-outline-success w-100 py-3${hora === inputHora.value ? " is-selected" : ""}`;
     botao.textContent = hora;
+    botao.setAttribute("aria-pressed", hora === inputHora.value ? "true" : "false");
     botao.addEventListener("click", () => {
       inputHora.value = hora;
       renderizarHorarios(horariosDisponiveis);
     });
-    horariosContainer.appendChild(botao);
+
+    const coluna = document.createElement("div");
+    coluna.className = "col-6 col-md-4 col-lg-3";
+    coluna.appendChild(botao);
+    horariosContainer.appendChild(coluna);
   });
 
-  topHorarioBadge.textContent = `Primeiro livre: ${horariosDisponiveis[0]}`;
-  horarioInfo.textContent = `${horariosDisponiveis.length} horário(s) livre(s) nesta data.`;
+  topHorarioBadge.textContent = inputHora.value ? `Horário selecionado: ${inputHora.value}` : `${horariosDisponiveis.length} opções livres`;
+  horarioInfo.textContent = inputHora.value
+    ? `${horariosDisponiveis.length} horário(s) livre(s) nesta data.`
+    : "Toque em um horário para selecionar.";
   atualizarResumo();
 }
 
 async function carregarHorarios() {
   if (!inputData.value) return;
 
-  horariosContainer.innerHTML = '<div class="slot-empty">Carregando horários...</div>';
+  if (inputHora.dataset.data !== inputData.value) {
+    inputHora.value = "";
+  }
+  inputHora.dataset.data = inputData.value;
+
+  horariosContainer.innerHTML = '<div class="col-12"><div class="slot-empty">Carregando horários...</div></div>';
   topHorarioBadge.textContent = "Carregando...";
   horarioInfo.textContent = "Buscando horários disponíveis.";
 
@@ -1304,7 +1386,7 @@ async function carregarHorarios() {
     renderizarHorarios(Array.isArray(dados.horarios) ? dados.horarios : []);
   } catch (erro) {
     console.error("Erro ao carregar horários:", erro);
-    horariosContainer.innerHTML = '<div class="slot-empty text-danger">Erro ao carregar horários.</div>';
+    horariosContainer.innerHTML = '<div class="col-12"><div class="slot-empty text-danger">Erro ao carregar horários.</div></div>';
     topHorarioBadge.textContent = "Erro";
     horarioInfo.textContent = "Não foi possível carregar os horários.";
     inputHora.value = "";
@@ -1355,6 +1437,7 @@ inputTelefone.addEventListener("input", (e) => {
   hint.textContent = digitos.length < 10
     ? "Telefone incompleto. Digite DDD + número."
     : "Telefone válido para contato.";
+  atualizarEstadoBotaoAgendar();
 });
 
 inputCliente.addEventListener("input", atualizarResumo);
@@ -1418,6 +1501,11 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  if (btnAgendar.disabled) {
+    mostrarFeedback("danger", "Preencha os campos obrigatórios antes de agendar.");
+    return;
+  }
+
   btnAgendar.classList.add("loading");
   btnAgendar.disabled = true;
   btnAgendarText.textContent = "Agendando...";
@@ -1449,6 +1537,7 @@ form.addEventListener("submit", async (e) => {
     form.reset();
     inputData.value = hojeISO;
     inputData.classList.remove("is-picked");
+    inputHora.value = "";
     dataInfo.textContent = `Data selecionada: ${rotuloDataCurto(inputData.value)} ${formatarDataBr(inputData.value)}`;
     renderizarAtalhosData();
     await carregarHorarios();
@@ -1459,8 +1548,8 @@ form.addEventListener("submit", async (e) => {
     mostrarFeedback("danger", "Erro de rede ao enviar o agendamento.");
   } finally {
     btnAgendar.classList.remove("loading");
-    btnAgendar.disabled = false;
     btnAgendarText.textContent = "Agendar horário";
+    atualizarEstadoBotaoAgendar();
   }
 });
 
@@ -1479,6 +1568,7 @@ renderizarServicos();
 atualizarPreviewServico();
 atualizarResumo();
 carregarHorarios();
+atualizarEstadoBotaoAgendar();
 </script>
 </body>
 </html>

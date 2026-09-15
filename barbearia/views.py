@@ -305,24 +305,36 @@ def agendamento_response(request, ok, message, *, status=200, redirect_name="age
 # =====================================
 @ensure_csrf_cookie
 def home(request):
-    telefone_cliente = request.session.get("telefone_cliente")
+    telefone_cliente = normalizar_telefone(request.session.get("telefone_cliente"))
+    is_staff = request.user.is_authenticated and request.user.is_staff
     agora = localtime(now())
     horario_operacional = _resumo_operacional(agora)
     ultimo_agendamento = _obter_ultimo_agendamento_salvo(request)
+
     agendamentos = list(
         Agendamento.objects.filter(q_agendamentos_futuros(), status="agendado")
         .select_related("cliente", "servico")
         .order_by("data", "hora")
     )
+
+    if not is_staff:
+        if telefone_cliente:
+            agendamentos = [
+                agendamento
+                for agendamento in agendamentos
+                if normalizar_telefone(agendamento.cliente.telefone) == telefone_cliente
+            ]
+        else:
+            agendamentos = []
+
     agendamentos_hoje_count = contar_agendamentos_hoje_visiveis(agora)
     for agendamento in agendamentos:
         agendamento.dia_semana = nome_dia_semana(agendamento.data)
         agendamento.rotulo_destaque, agendamento.rotulo_classe = rotulo_data(agendamento.data)
-        agendamento.meu_agendamento = (
-            (not request.user.is_authenticated or not request.user.is_staff)
-            and telefone_cliente
-            and agendamento.cliente.telefone == telefone_cliente
+        agendamento.meu_agendamento = (not is_staff) and bool(
+            telefone_cliente and normalizar_telefone(agendamento.cliente.telefone) == telefone_cliente
         )
+
     servicos = Servico.objects.all().order_by("id")
     return render(
         request,
@@ -335,6 +347,33 @@ def home(request):
             "ultimo_agendamento": ultimo_agendamento,
             "barbearia": BARBEARIA_CONTATO,
             "horario_operacional": horario_operacional,
+            "proximo_horario_livre": obter_proximo_horario_disponivel(),
+        },
+    )
+
+
+@ensure_csrf_cookie
+def horarios_agendados(request):
+    telefone_cliente = normalizar_telefone(request.session.get("telefone_cliente"))
+    agendamentos = list(
+        Agendamento.objects.filter(q_agendamentos_futuros(), status="agendado")
+        .select_related("cliente", "servico")
+        .order_by("data", "hora")
+    )
+
+    for agendamento in agendamentos:
+        agendamento.dia_semana = nome_dia_semana(agendamento.data)
+        agendamento.rotulo_destaque, agendamento.rotulo_classe = rotulo_data(agendamento.data)
+        agendamento.eh_meu = bool(
+            telefone_cliente and normalizar_telefone(agendamento.cliente.telefone) == telefone_cliente
+        )
+
+    return render(
+        request,
+        "barbearia/horarios_agendados.html",
+        {
+            "agendamentos": agendamentos,
+            "barbearia": BARBEARIA_CONTATO,
             "proximo_horario_livre": obter_proximo_horario_disponivel(),
         },
     )
@@ -514,7 +553,8 @@ def horarios_livres_api(request):
 # Listar agendamentos
 # =====================================
 def listar_agendamentos(request):
-    telefone_cliente = request.session.get("telefone_cliente")
+    telefone_cliente = normalizar_telefone(request.session.get("telefone_cliente"))
+    is_staff = request.user.is_authenticated and request.user.is_staff
     agora = localtime(now())
     hoje = agora.date()
     hora_atual = agora.time()
@@ -523,6 +563,14 @@ def listar_agendamentos(request):
         .select_related("cliente", "servico")
         .order_by("data", "hora")
     )
+
+    if not is_staff:
+        if telefone_cliente:
+            agendamentos = [
+                ag for ag in agendamentos if normalizar_telefone(ag.cliente.telefone) == telefone_cliente
+            ]
+        else:
+            agendamentos = []
 
     data = []
     for ag in agendamentos:
@@ -537,8 +585,12 @@ def listar_agendamentos(request):
             "rotulo_destaque": rotulo_destaque,
             "rotulo_classe": rotulo_classe,
             "eh_hoje": ag.data == hoje,
-            "is_staff": request.user.is_authenticated and request.user.is_staff,
-            "meu_agendamento": (not request.user.is_authenticated or not request.user.is_staff) and telefone_cliente and ag.cliente.telefone == telefone_cliente
+            "is_staff": is_staff,
+            "meu_agendamento": bool(
+                (not is_staff)
+                and telefone_cliente
+                and normalizar_telefone(ag.cliente.telefone) == telefone_cliente
+            ),
         })
     return JsonResponse(data, safe=False)
 

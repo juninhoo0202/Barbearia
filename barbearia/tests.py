@@ -32,11 +32,13 @@ class BarbeariaViewsTests(TestCase):
     def test_public_pages_and_aliases_render(self):
         self.assertEqual(self.client.get(reverse("home")).status_code, 200)
         self.assertEqual(self.client.get(reverse("agendar")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("horarios_agendados")).status_code, 200)
         self.assertEqual(self.client.get(reverse("admin_login")).status_code, 200)
         self.assertEqual(reverse("login"), "/login/")
         self.assertEqual(reverse("logout"), "/logout/")
         self.assertEqual(reverse("login_admin"), "/login-admin/")
         self.assertEqual(reverse("painel_admin"), "/painel-admin/")
+        self.assertEqual(reverse("horarios_agendados"), "/horarios-agendados/")
 
     def test_admin_dashboard_renders_for_staff(self):
         self.client.force_login(self.staff_user)
@@ -133,6 +135,62 @@ class BarbeariaViewsTests(TestCase):
         response = self.client.post(reverse("agendar"), post_data, follow=True)
         self.assertEqual(Agendamento.objects.count(), before)
         self.assertEqual(response.status_code, 200)
+
+    def test_home_cliente_exibe_apenas_proprios_agendamentos(self):
+        future_date = self.proxima_data_util(2)
+        cliente_meu = Cliente.objects.create(nome="Cliente Meu", telefone="(11) 97777-6666")
+        cliente_outro = Cliente.objects.create(nome="Cliente Outro", telefone="(11) 98888-1111")
+
+        Agendamento.objects.create(
+            cliente=cliente_meu,
+            servico=self.servico,
+            data=future_date,
+            hora=time(11, 0),
+            observacoes="Meu horário",
+        )
+        Agendamento.objects.create(
+            cliente=cliente_outro,
+            servico=self.servico,
+            data=future_date,
+            hora=time(12, 0),
+            observacoes="Horário de outro cliente",
+        )
+
+        session = self.client.session
+        session["telefone_cliente"] = cliente_meu.telefone
+        session.save()
+
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Meus horários agendados")
+        self.assertContains(response, cliente_meu.nome)
+        self.assertNotContains(response, cliente_outro.nome)
+
+    def test_horarios_agendados_pagina_lista_todos_horarios(self):
+        future_date = self.proxima_data_util(2)
+        cliente_1 = Cliente.objects.create(nome="Cliente Lista 1", telefone="(11) 93333-1111")
+        cliente_2 = Cliente.objects.create(nome="Cliente Lista 2", telefone="(11) 94444-2222")
+
+        Agendamento.objects.create(
+            cliente=cliente_1,
+            servico=self.servico,
+            data=future_date,
+            hora=time(10, 0),
+            observacoes="",
+        )
+        Agendamento.objects.create(
+            cliente=cliente_2,
+            servico=self.servico,
+            data=future_date,
+            hora=time(13, 0),
+            observacoes="",
+        )
+
+        response = self.client.get(reverse("horarios_agendados"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Horários já agendados")
+        self.assertContains(response, "10:00")
+        self.assertContains(response, "13:00")
 
     def test_ajax_agendamento_returns_json_success(self):
         future_date = self.proxima_data_util(2)

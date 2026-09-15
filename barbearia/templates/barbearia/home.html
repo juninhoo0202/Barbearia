@@ -19,7 +19,11 @@
         <div class="hero-appointments-head">
           <div class="hero-appointments-title">
             <i class="bi bi-calendar2-week"></i>
-            Horários já agendados
+            {% if request.user.is_authenticated and request.user.is_staff %}
+              Horários já agendados
+            {% else %}
+              Meus horários agendados
+            {% endif %}
           </div>
           {% if agendamentos %}
             <span class="hero-appointments-count">
@@ -84,7 +88,11 @@
             </div>
           {% else %}
             <div class="appointments-empty">
-              Nenhum horário agendado até o momento.
+              {% if request.user.is_authenticated and request.user.is_staff %}
+                Nenhum horário agendado até o momento.
+              {% else %}
+                Você ainda não possui horários agendados nesta sessão.
+              {% endif %}
             </div>
           {% endif %}
         </div>

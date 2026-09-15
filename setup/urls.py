@@ -18,6 +18,7 @@ urlpatterns = [
     # Páginas principais
     path("", views.home, name="home"),
     path("agendar/", views.agendar, name="agendar"),
+    path("horarios-agendados/", views.horarios_agendados, name="horarios_agendados"),
     path("limpar-ultimo-agendamento/", views.limpar_ultimo_agendamento, name="limpar_ultimo_agendamento"),
 
     # Admin de agendamentos

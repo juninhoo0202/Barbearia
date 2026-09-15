@@ -1,0 +1,70 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Horários Agendados - Barbearia Estilo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-success-subtle">
+  {% include "barbearia/partials/site_chrome.html" %}
+
+  <main class="container py-4">
+    <div class="card border-success-subtle shadow-sm mb-3">
+      <div class="card-body d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+        <div>
+          <span class="badge text-bg-success mb-2"><i class="bi bi-calendar-week me-1"></i> Agenda geral</span>
+          <h1 class="h4 mb-1">Horários já agendados</h1>
+          <p class="text-muted mb-0">Aqui você visualiza todos os horários ocupados da barbearia.</p>
+        </div>
+        <div class="text-lg-end">
+          <div class="fw-bold text-success">{{ agendamentos|length }} horário{{ agendamentos|length|pluralize:"s" }} ocupado{{ agendamentos|length|pluralize:"s" }}</div>
+          {% if proximo_horario_livre and proximo_horario_livre.texto %}
+            <small class="text-muted">Próximo livre: {{ proximo_horario_livre.texto }}</small>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-0">
+        {% if agendamentos %}
+          <div class="list-group list-group-flush">
+            {% for agendamento in agendamentos %}
+              <div class="list-group-item py-3 px-3 px-md-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="badge {{ agendamento.rotulo_classe }}">{{ agendamento.rotulo_destaque }}</span>
+                      <strong>{{ agendamento.data|date:"d/m/Y" }} às {{ agendamento.hora|time:"H:i" }}</strong>
+                      {% if agendamento.eh_meu %}
+                        <span class="badge text-bg-primary">Meu horário</span>
+                      {% endif %}
+                    </div>
+                    <div class="text-muted small mt-1">
+                      <i class="bi bi-clock me-1"></i>{{ agendamento.dia_semana }}
+                      <span class="mx-1">•</span>
+                      <i class="bi bi-scissors me-1"></i>{{ agendamento.servico.nome }}
+                    </div>
+                  </div>
+                  <a href="{% url 'agendar' %}?data={{ agendamento.data|date:'Y-m-d' }}" class="btn btn-outline-success btn-sm align-self-start">
+                    Agendar neste dia
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="p-4 text-center text-muted">
+            Nenhum horário agendado no momento.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
